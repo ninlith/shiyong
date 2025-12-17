@@ -1,0 +1,1232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="coloris.min.css"/>
+<title>SVG Color Theme Editor</title>
+<style>
+/* ===== BASE STYLES ===== */
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: sans-serif;
+  background: #222;
+  color: #ddd;
+  display: flex;
+  flex-direction: row;
+  gap: 1.2em;
+  padding: 1em;
+  height: 100vh;
+  box-sizing: border-box;
+}
+
+body.inspect-mode,
+body.inspect-mode * {
+  cursor: crosshair !important;
+}
+
+/* ===== SVG CONTAINER ===== */
+#svgContainer {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  background: #181818;
+  border-radius: 8px;
+  padding: 1em;
+  overflow: hidden;
+  touch-action: none;
+}
+
+#svgPreview {
+  max-width: 100%;
+  max-height: 100%;
+  transition: transform 0.1s ease-out;
+  transform-origin: center;
+  pointer-events: none;
+}
+
+#svgPreview * {
+  pointer-events: auto;
+}
+
+/* ===== CONTROLS PANEL ===== */
+#controls {
+  flex: 0 0 300px;
+  display: flex;
+  flex-direction: column;
+  background: #333;
+  border-radius: 8px;
+  padding: 1em;
+  padding-top: 10px;
+  max-height: 100%;
+  max-width: 300px;
+}
+
+#colorList {
+  flex: 1;
+  overflow-y: auto;
+  margin-bottom: 0.7em;
+  scrollbar-width: none;
+}
+
+.color-item {
+  margin: 3px 0px 3px 2px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.color-item label {
+  flex: 1;
+  margin-right: .5em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin-top: 3px;
+  margin-bottom: 3px;
+}
+
+.color-item label.highlight {
+  outline: 2px dashed #f69c55; 
+  outline-offset: 0px;
+  border-radius: 0px;
+}
+
+/* ===== COLOR INPUTS & SWATCHES ===== */
+[data-coloris] {
+  font-family: monospace;
+  margin-right: 2px;
+  width: 7ch;
+  text-overflow: ellipsis;
+  background: #ddd;
+  padding: 2px 4px;
+  margin-left: 6px;
+  border: 0px solid #333;
+  border-radius: 3px;
+  background-color: white;
+  outline: none;
+  box-shadow: none;
+}
+
+input[type=text] {
+  user-select: none;
+  margin-right: 0;
+}
+
+.swatch {
+  position: relative;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 0px solid #444;
+  margin-right: 4px;
+  flex-shrink: 0;
+}
+
+.swatch::before {
+  content: '';
+  position: absolute;
+  top: 0.5px;
+  left: 0.5px;
+  right: 0.5px;
+  bottom: 0.5px;
+  background: 
+    linear-gradient(45deg, #888 25%, transparent 25%), 
+    linear-gradient(-45deg, #888 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, #888 75%),
+    linear-gradient(-45deg, transparent 75%, #888 75%);
+  background-size: 8px 8px;
+  background-position: 0 0, 0 4px, 4px -4px, -4px 0px;
+  z-index: 0;
+  border-radius: 50%;
+}
+
+.swatch::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: inherit;
+  border-radius: 50%;
+  z-index: 1;
+}
+
+/* ===== BUTTONS & CONTROLS ===== */
+button {
+  width: 100%;
+  padding: .5em;
+  background: #444;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: .3em;
+}
+
+button:hover { 
+  background: #666; 
+}
+
+#buttonrow {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: .3em;
+  margin-top: 0.1em;
+}
+
+#buttonrow button {
+  width: 100%;
+  padding: .4em .8em;
+}
+
+#zoomControls {
+  display: flex;
+  justify-content: right;
+  align-items: center;
+  gap: .3em;
+  margin-top: 0px;
+}
+
+#zoomControls button {
+  width: auto;
+  padding: .4em .8em;
+}
+
+#zoomValue {
+  display: flex;
+  justify-content: center;
+  margin-top: 4px;
+  align-items: center;
+  width: 100%;
+}
+
+#interactionToggle {
+  width: auto;
+  padding: .4em .8em;
+}
+
+#interactionToggle.active {
+  background: #f69c55;
+  color: #222;
+}
+
+/* ===== NOTIFICATIONS ===== */
+.copy-notification {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  background: #456657;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 4px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+  z-index: 1000;
+  opacity: 0;
+  transform: translateY(-20px);
+  transition: all 0.3s ease;
+}
+
+.copy-notification.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.copy-notification.error {
+  background: #664a45;
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
+@media (max-width: 700px) {
+  body {
+    flex-direction: column;
+    height: 100vh;
+    min-height: 100vh;
+    gap: 1em;
+    padding: 1em;
+    box-sizing: border-box;
+  }
+  
+  #svgContainer {
+    flex: none;
+    max-height: 50vh;
+  }
+  
+  #controls {
+    flex: 1;
+    min-height: 200px;
+    max-height: calc(50vh - 2em);
+    overflow-y: auto;
+    max-width: 100%;
+  }
+}
+</style>
+</head>
+<body>
+  <div id="svgContainer">
+    <object id="svgPreview" type="image/svg+xml"></object>
+  </div>
+
+  <div id="controls">
+    <div id="colorList">Loading…</div>
+    <div id="zoomControls">
+      <button id="zoomOut" title="Zoom Out (-)">−</button>
+      <span id="zoomValue">100%</span>
+      <button id="zoomIn" title="Zoom In (+)">+</button>
+      <button id="zoomReset" title="Reset Zoom (0)">1:1</button>
+      <button id="zoomCenter" title="Center (.)">0,0</button>
+      <button id="interactionToggle" title="Inspect Mode">&nbsp;<u>I</u>nspect&nbsp;</button>
+    </div>
+    <button id="downloadBtn" disabled hidden>Download</button>
+    <div id="buttonrow">
+      <button id="undoBtn" title="Undo Color Pick (Ctrl+Z)">Undo</button>
+      <button id="redoBtn" title="Redo Color Pick (Ctrl+Shift+Z / Ctrl+Y)">Redo</button>
+      <button id="copyBtn" title="Copy CSS to Clipboard (Ctrl-C)"><u>C</u>opy&nbsp;CSS</button>
+      <button id="pasteBtn" title="Paste CSS from Clipboard (Ctrl-V)"><u>P</u>aste&nbsp;CSS</button>
+    </div>
+  </div>
+
+<script src="coloris.min.js"></script>
+<script>
+// ===== CONFIGURATION =====
+const CONFIG = {
+  MAX_HISTORY: 100,
+  SAVE_DELAY: 1000,
+  SVG_FILE: 'shiyong.inkscape.svg'
+};
+
+// ===== STATE MANAGEMENT =====
+let zoom = 1;
+let offsetX = 0, offsetY = 0;
+let isPanning = false;
+let inspectMode = false;
+let isApplyingHistory = false;
+let undoStack = [];
+let redoStack = [];
+let saveTimeout = null;
+
+// ===== CORE APPLICATION INITIALIZATION =====
+async function initializeApp() {
+  console.log("Starting app initialization...");
+  
+  // Load and inject SVG with fonts
+  await loadSVGWithFonts();
+  console.log("SVG injected with fonts");
+  
+  // Wait for SVG to process
+  await new Promise(resolve => setTimeout(resolve, 500));
+  
+  // Load/generate CSS
+  await loadCSS();
+  console.log("CSS loaded/generated");
+  
+  // Setup other features
+  setupPanning();
+  setupSVGHighlightStyles();
+  updateSVGCursor();
+  
+  console.log("App initialization complete");
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  initializeApp();
+  
+  // Initialize undo/redo history
+  const currentCSS = localStorage.getItem("themeCSS") || "";
+  undoStack.push(currentCSS);
+  updateUndoRedoButtons();
+});
+
+// ===== SVG LOADING & PROCESSING =====
+async function loadSVGWithFonts() {
+  return new Promise(async (resolve) => {
+    const response = await fetch(CONFIG.SVG_FILE);
+    let svgText = await response.text();
+    
+    // Inject font faces into SVG
+    const baseUrl = window.location.origin;
+    const fontStyle = `
+      <style>
+          @import url('https://fonts.googleapis.com/css2?family=Oxanium:wght@200..800&amp;family=Roboto+Condensed');
+          @font-face {
+            font-family: 'Oxanium';
+            src: url('${baseUrl}/fonts/Oxanium-VariableFont_wght.ttf') format('truetype');
+            font-display: swap;
+          }
+          @font-face {
+            font-family: 'Roboto Condensed';
+            src: url('${baseUrl}/fonts/RobotoCondensed-Regular.ttf') format('truetype');
+            font-display: swap;
+          }
+      </style>
+    `;
+    
+    // Insert fonts into SVG
+    svgText = svgText.replace(/(<defs[^>]*>)/, `$1${fontStyle}`);
+    
+    // Create blob and set as object data
+    const blob = new Blob([svgText], {type: 'image/svg+xml'});
+    const url = URL.createObjectURL(blob);
+    const svgPreview = document.getElementById('svgPreview');
+    
+    svgPreview.addEventListener('load', () => {
+      console.log("SVG blob loaded successfully");
+      resolve();
+    }, { once: true });
+    
+    svgPreview.data = url;
+  });
+}
+
+function waitForSVGLoad() {
+  return new Promise((resolve) => {
+    const svg = document.getElementById("svgPreview");
+    
+    const checkSVG = () => {
+      try {
+        const svgDoc = svg.contentDocument;
+        if (svgDoc && svgDoc.documentElement && svgDoc.querySelector('*')) {
+          console.log("SVG document is ready");
+          resolve();
+        } else {
+          setTimeout(checkSVG, 100);
+        }
+      } catch (error) {
+        setTimeout(checkSVG, 100);
+      }
+    };
+    
+    svg.addEventListener('load', () => resolve());
+    checkSVG();
+  });
+}
+
+// ===== CSS MANAGEMENT =====
+async function loadCSS() {
+  const saved = localStorage.getItem("themeCSS");
+  let css = saved;
+  
+  if (!css) {
+    try {
+      console.log("No saved CSS, generating from SVG...");
+      await waitForSVGLoad();
+      css = await generateCSSFromSVG();
+      localStorage.setItem("themeCSS", css);
+    } catch (error) {
+      console.error("Error generating CSS from SVG:", error);
+      css = "/* Error generating CSS from SVG */\n";
+    }
+  }
+  
+  applyCSS(css);
+}
+
+async function generateCSSFromSVG() {
+  const svg = document.getElementById("svgPreview");
+  const svgDoc = svg.contentDocument;
+  
+  if (!svgDoc) throw new Error("SVG document not accessible");
+  
+  let generatedCSS = "/* Auto-generated from SVG */\n\n";
+  const elements = svgDoc.querySelectorAll('*[id]');
+  let hasRules = false;
+  
+  console.log(`Found ${elements.length} elements with IDs`);
+  
+  elements.forEach(el => {
+    const id = el.id;
+    if (id && !['svg1', 'defs1', 'namedview1'].includes(id)) {
+      // Check for stored original values first
+      const originalFill = el.getAttribute('data-original-fill');
+      const originalStroke = el.getAttribute('data-original-stroke');
+      
+      const fill = originalFill || el.getAttribute('fill');
+      const stroke = originalStroke || el.getAttribute('stroke');
+      const style = el.getAttribute('style');
+      
+      // Parse style attribute
+      let styleFill, styleStroke;
+      if (style) {
+        const fillMatch = style.match(/fill:\s*([^;]+)/);
+        const strokeMatch = style.match(/stroke:\s*([^;]+)/);
+        styleFill = fillMatch ? fillMatch[1].trim() : null;
+        styleStroke = strokeMatch ? strokeMatch[1].trim() : null;
+      }
+      
+      // Use style attribute values first, then direct attributes
+      const finalFill = styleFill || fill;
+      const finalStroke = styleStroke || stroke;
+      
+      if (finalFill && finalFill !== 'none') {
+        generatedCSS += `#${id} { fill: ${finalFill}; }\n`;
+        hasRules = true;
+      }
+      if (finalStroke && finalStroke !== 'none') {
+        generatedCSS += `#${id} { stroke: ${finalStroke}; }\n`;
+        hasRules = true;
+      }
+    }
+  });
+  
+  return hasRules ? generatedCSS : "/* No color rules found in SVG */\n";
+}
+
+function applyCSS(css) {
+  console.log("Applying CSS:", css);
+  isApplyingHistory = true;
+  
+  // Extract swatches from CSS comments
+  const swatchMatch = css.match(/\/\*\s*swatches:[\s\S]*?\*\//i);
+  let swatches = [];
+  if (swatchMatch) {
+    const hexColors = swatchMatch[0].match(/#[0-9a-fA-F]{3,6}/g);
+    if (hexColors) swatches = hexColors;
+  }
+
+  // Parse color rules from CSS
+  const cssWithoutComments = css.replace(/\/\*[\s\S]*?\*\//g, '');
+  const colorRules = [];
+  const ruleMatches = [...cssWithoutComments.matchAll(/([^{]+)\{([^}]+)\}/g)];
+  
+  ruleMatches.forEach(match => {
+    const selector = match[1].trim();
+    const ruleBody = match[2];
+    
+    // Extract fill/stroke/color properties
+    const fillMatch = ruleBody.match(/(?:^|;)\s*fill\s*:\s*([^;]+)/i);
+    const strokeMatch = ruleBody.match(/(?:^|;)\s*stroke\s*:\s*([^;]+)/i);
+    const colorMatch = ruleBody.match(/(?:^|;)\s*color\s*:\s*([^;]+)/i);
+    
+    if (fillMatch) colorRules.push({selector, property: 'fill', value: fillMatch[1].trim()});
+    if (strokeMatch) colorRules.push({selector, property: 'stroke', value: strokeMatch[1].trim()});
+    if (colorMatch) colorRules.push({selector, property: 'color', value: colorMatch[1].trim()});
+  });
+
+  updateColorList(colorRules, swatches);
+  applyColorsToSVG(colorRules);
+  
+  setTimeout(() => {
+    setupColorInputListeners();
+    isApplyingHistory = false;
+    if (!isApplyingHistory) saveToHistory();
+  }, 0);
+}
+
+function updateColorList(colors, swatches) {
+  const colorList = document.getElementById("colorList");
+  if (!colors.length) {
+    colorList.textContent = "No color rules found in CSS.";
+    return;
+  }
+
+  colorList.innerHTML = "";
+  window.svgToColorItems = new Map();
+
+  colors.forEach(({selector, property, value}) => {
+    const div = document.createElement("div");
+    div.className = "color-item";
+    
+    const label = document.createElement("label");
+    label.textContent = `${selector} (${property})`;
+
+    const input = document.createElement("input");
+    input.type = "text";
+    input.setAttribute("data-coloris", "");
+    input.setAttribute("readonly", "");
+    input.value = value; // Preserve original value including alpha
+
+    const swatch = document.createElement("div");
+    swatch.className = "swatch";
+    swatch.setAttribute("swatch", "");
+    swatch.style.backgroundColor = value;
+
+    // Event handlers
+    input.addEventListener("input", () => {
+      updateColor(selector, property, input.value);
+      saveCSS();
+    });
+    
+    input.addEventListener("input", e => {
+      swatch.style.backgroundColor = e.target.value;
+    });
+    
+    swatch.addEventListener("click", () => input.click());
+
+    // Hover interactions
+    label.addEventListener("mouseenter", () => {
+      if (inspectMode) {
+        highlightElements(selector, property);
+        label.classList.add('highlight');
+      }
+    });
+    
+    label.addEventListener("mouseleave", () => {
+      if (inspectMode) {
+        clearHighlights();
+        label.classList.remove('highlight');
+      }
+    });
+
+    // Store mapping for hover functionality
+    if (!window.svgToColorItems.has(selector)) {
+      window.svgToColorItems.set(selector, []);
+    }
+    window.svgToColorItems.get(selector).push(div);
+
+    div.append(label, swatch, input);
+    colorList.appendChild(div);
+  });
+
+  document.getElementById("copyBtn").disabled = false;
+  document.getElementById("downloadBtn").disabled = false;
+
+  // Update Coloris with swatches
+  if (swatches.length > 0) {
+    Coloris({ swatches });
+  }
+}
+
+function applyColorsToSVG(colors) {
+  const svgDoc = document.getElementById("svgPreview").contentDocument;
+  if (svgDoc) {
+    colors.forEach(({selector, property, value}) =>
+      svgDoc.querySelectorAll(selector).forEach(el => {
+        el.style[property] = value;
+        // Store original value to preserve alpha
+        el.setAttribute(`data-original-${property}`, value);
+      })
+    );
+    
+    setTimeout(() => setupSVGHoverListeners(), 100);
+  }
+}
+
+function updateColor(selector, property, value) {
+  const svgDoc = document.getElementById("svgPreview").contentDocument;
+  if (!svgDoc) return;
+  
+  svgDoc.querySelectorAll(selector).forEach(el => {
+    el.style[property] = value;
+    el.setAttribute(`data-original-${property}`, value);
+  });
+}
+
+function saveCSS() {
+  const colorItems = document.querySelectorAll(".color-item");
+  let css = "";
+  
+  // Preserve swatches from original CSS
+  const savedCSS = localStorage.getItem("themeCSS") || "";
+  const swatchCommentMatch = savedCSS.match(/\/\*\s*swatches:[\s\S]*?\*\//i);
+  if (swatchCommentMatch) css += swatchCommentMatch[0] + '\n\n';
+  
+  colorItems.forEach(div => {
+    const label = div.querySelector("label");
+    const input = div.querySelector("input[data-coloris]");
+    if (!label || !input) return;
+    
+    const [selector, propertyPart] = label.textContent.split(" (");
+    const property = propertyPart.replace(")", "");
+    
+    // Use input value directly to preserve alpha
+    css += `${selector} { ${property}: ${input.value}; }\n`;
+  });
+
+  localStorage.setItem("themeCSS", css);
+}
+
+// ===== INTERACTION & HIGHLIGHTING =====
+function setupSVGHighlightStyles() {
+  const svgDoc = document.getElementById("svgPreview").contentDocument;
+  if (!svgDoc) return;
+
+  // Create filter for complex elements
+  let defs = svgDoc.querySelector('defs');
+  if (!defs) {
+    defs = svgDoc.createElementNS('http://www.w3.org/2000/svg', 'defs');
+    svgDoc.documentElement.appendChild(defs);
+  }
+
+  let outlineFilter = svgDoc.getElementById('outline-filter');
+  if (!outlineFilter) {
+    outlineFilter = svgDoc.createElementNS('http://www.w3.org/2000/svg', 'filter');
+    outlineFilter.setAttribute('id', 'outline-filter');
+    outlineFilter.setAttribute('x', '-50%');
+    outlineFilter.setAttribute('y', '-50%');
+    outlineFilter.setAttribute('width', '200%');
+    outlineFilter.setAttribute('height', '200%');
+
+    const feMorphology = svgDoc.createElementNS('http://www.w3.org/2000/svg', 'feMorphology');
+    feMorphology.setAttribute('in', 'SourceAlpha');
+    feMorphology.setAttribute('result', 'DILATED');
+    feMorphology.setAttribute('operator', 'dilate');
+    feMorphology.setAttribute('radius', '0.25');
+
+    const feFlood = svgDoc.createElementNS('http://www.w3.org/2000/svg', 'feFlood');
+    feFlood.setAttribute('flood-color', '#f69c55');
+    feFlood.setAttribute('result', 'OUTLINE_COLOR');
+
+    const feComposite1 = svgDoc.createElementNS('http://www.w3.org/2000/svg', 'feComposite');
+    feComposite1.setAttribute('in', 'OUTLINE_COLOR');
+    feComposite1.setAttribute('in2', 'DILATED');
+    feComposite1.setAttribute('operator', 'in');
+    feComposite1.setAttribute('result', 'OUTLINE');
+
+    const feMerge = svgDoc.createElementNS('http://www.w3.org/2000/svg', 'feMerge');
+    feMerge.appendChild(svgDoc.createElementNS('http://www.w3.org/2000/svg', 'feMergeNode'));
+    feMerge.appendChild(svgDoc.createElementNS('http://www.w3.org/2000/svg', 'feMergeNode'));
+    feMerge.children[0].setAttribute('in', 'OUTLINE');
+    feMerge.children[1].setAttribute('in', 'SourceGraphic');
+
+    outlineFilter.append(feMorphology, feFlood, feComposite1, feMerge);
+    defs.appendChild(outlineFilter);
+  }
+
+  // Create styles for clone outlines
+  let style = svgDoc.getElementById("hoverHighlightStyle");
+  if (!style) {
+    style = svgDoc.createElementNS("http://www.w3.org/2000/svg", "style");
+    style.id = "hoverHighlightStyle";
+    style.textContent = `
+      .dashed-outline-clone {
+        pointer-events: none;
+        stroke: #f69c55;
+        stroke-width: 2;
+        fill: none;
+        stroke-dasharray: 5,3;
+      }
+    `;
+    svgDoc.documentElement.appendChild(style);
+  }
+}
+
+function highlightElements(selector, property) {
+  const svgDoc = document.getElementById("svgPreview").contentDocument;
+  if (!svgDoc) return;
+
+  svgDoc.querySelectorAll(selector).forEach(el => {
+    if (el._highlightClone || el.hasAttribute('data-original-filter')) return;
+
+    if (isSimpleShape(el)) {
+      useCloneOutline(svgDoc, el);
+    } else {
+      useFilterOutline(el);
+    }
+  });
+}
+
+function isSimpleShape(el) {
+  const simpleShapes = ['circle', 'rect', 'ellipse', 'line', 'polygon', 'polyline'];
+  return simpleShapes.includes(el.tagName.toLowerCase());
+}
+
+function useCloneOutline(svgDoc, el) {
+  try {
+    const clone = el.cloneNode(true);
+    clone.setAttribute("fill", "none");
+    clone.setAttribute("stroke", "#f69c55");
+    clone.setAttribute("stroke-width", "2");
+    clone.setAttribute("stroke-dasharray", "5,3");
+    clone.setAttribute("vector-effect", "non-scaling-stroke");
+    clone.setAttribute("class", "dashed-outline-clone");
+    clone.removeAttribute("style");
+    clone.removeAttribute("filter");
+    clone.removeAttribute("id");
+
+    if (el.parentNode) {
+      el.parentNode.insertBefore(clone, el.nextSibling);
+      el._highlightClone = clone;
+    }
+  } catch (error) {
+    console.log('Clone outline failed, falling back to filter:', error);
+    useFilterOutline(el);
+  }
+}
+
+function useFilterOutline(el) {
+  const originalFilter = el.getAttribute('filter');
+  el.setAttribute('data-original-filter', originalFilter || '');
+  el.setAttribute('filter', 'url(#outline-filter)');
+}
+
+function clearHighlights() {
+  const svgDoc = document.getElementById("svgPreview").contentDocument;
+  if (!svgDoc) return;
+
+  // Clear filter outlines
+  svgDoc.querySelectorAll('[data-original-filter]').forEach(el => {
+    const originalFilter = el.getAttribute('data-original-filter');
+    if (originalFilter) {
+      el.setAttribute('filter', originalFilter);
+    } else {
+      el.removeAttribute('filter');
+    }
+    el.removeAttribute('data-original-filter');
+  });
+
+  // Clear clone outlines
+  svgDoc.querySelectorAll('.dashed-outline-clone').forEach(clone => {
+    if (clone.parentNode) clone.parentNode.removeChild(clone);
+  });
+
+  // Clean up references
+  svgDoc.querySelectorAll('*').forEach(el => {
+    if (el._highlightClone) delete el._highlightClone;
+  });
+}
+
+function setupSVGHoverListeners() {
+  const svgDoc = document.getElementById("svgPreview").contentDocument;
+  if (!svgDoc) {
+    setTimeout(setupSVGHoverListeners, 100);
+    return;
+  }
+
+  window.svgToColorItems.forEach((colorItems, selector) => {
+    svgDoc.querySelectorAll(selector).forEach(svgElement => {
+      svgElement.removeEventListener('mouseenter', svgElement._hoverHandler);
+      svgElement.removeEventListener('mouseleave', svgElement._leaveHandler);
+      
+      svgElement._hoverHandler = () => {
+        if (!inspectMode) return;
+        highlightElements(selector, 'fill');
+        colorItems.forEach(item => {
+          const label = item.querySelector('label');
+          if (label) {
+            label.classList.add('highlight');
+            item.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          }
+        });
+      };
+      
+      svgElement._leaveHandler = () => {
+        if (!inspectMode) return;
+        clearHighlights();
+        colorItems.forEach(item => {
+          const label = item.querySelector('label');
+          if (label) label.classList.remove('highlight');
+        });
+      };
+      
+      svgElement.addEventListener('mouseenter', svgElement._hoverHandler);
+      svgElement.addEventListener('mouseleave', svgElement._leaveHandler);
+    });
+  });
+}
+
+// ===== ZOOM & PANNING =====
+function applyZoom() {
+  const svg = document.getElementById("svgPreview");
+  svg.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(${zoom})`;
+  document.getElementById("zoomValue").textContent = Math.round(zoom * 100) + "%";
+}
+
+function setupPanning() {
+  const svgDoc = document.getElementById("svgPreview").contentDocument;
+  if (!svgDoc) {
+    setTimeout(setupPanning, 100);
+    return;
+  }
+
+  let panStartX = 0, panStartY = 0;
+  const svgContainer = document.getElementById("svgContainer");
+
+  // Mouse events
+  svgContainer.addEventListener("mousedown", (e) => {
+    if (inspectMode) return;
+    isPanning = true;
+    panStartX = e.clientX;
+    panStartY = e.clientY;
+    svgContainer.style.cursor = "grabbing";
+    if (svgDoc) svgDoc.documentElement.style.cursor = "grabbing";
+    e.preventDefault();
+  });
+
+  svgContainer.addEventListener("mousemove", (e) => {
+    if (!isPanning) return;
+    const dx = e.clientX - panStartX;
+    const dy = e.clientY - panStartY;
+    offsetX += dx;
+    offsetY += dy;
+    panStartX = e.clientX;
+    panStartY = e.clientY;
+    applyZoom();
+  });
+
+  svgContainer.addEventListener("mouseup", () => {
+    isPanning = false;
+    svgContainer.style.cursor = "default";
+    if (svgDoc) svgDoc.documentElement.style.cursor = "default";
+  });
+
+  svgContainer.addEventListener("mouseleave", () => {
+    isPanning = false;
+    svgContainer.style.cursor = "default";
+    if (svgDoc) svgDoc.documentElement.style.cursor = "default";
+  });
+
+  // Mouse wheel zoom
+  svgContainer.addEventListener("wheel", (e) => {
+    e.preventDefault();
+    const scaleFactor = 1.1;
+    const rect = document.getElementById("svgPreview").getBoundingClientRect();
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+    const mouseX = e.clientX - rect.left - centerX;
+    const mouseY = e.clientY - rect.top - centerY;
+    const prevZoom = zoom;
+
+    if (e.deltaY < 0) zoom *= scaleFactor;
+    else zoom /= scaleFactor;
+
+    zoom = Math.min(Math.max(zoom, 0.1), 10);
+    offsetX -= mouseX * (zoom / prevZoom - 1);
+    offsetY -= mouseY * (zoom / prevZoom - 1);
+    applyZoom();
+  }, { passive: false });
+
+  // Touch events
+  let pinchStartDist = 0;
+  let pinchStartZoom = 1;
+  let pinchMidX = 0;
+  let pinchMidY = 0;
+
+  svgContainer.addEventListener("touchstart", (e) => {
+    if (e.touches.length === 1) {
+      isPanning = true;
+      panStartX = e.touches[0].clientX;
+      panStartY = e.touches[0].clientY;
+    } else if (e.touches.length === 2) {
+      isPanning = false;
+      const t1 = e.touches[0];
+      const t2 = e.touches[1];
+      pinchStartDist = Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY);
+      pinchStartZoom = zoom;
+
+      const rect = document.getElementById("svgPreview").getBoundingClientRect();
+      const centerX = rect.width / 2;
+      const centerY = rect.height / 2;
+      pinchMidX = ((t1.clientX + t2.clientX) / 2) - rect.left - centerX;
+      pinchMidY = ((t1.clientY + t2.clientY) / 2) - rect.top - centerY;
+    }
+  });
+
+  svgContainer.addEventListener("touchmove", (e) => {
+    if (e.touches.length === 1 && isPanning) {
+      const dx = e.touches[0].clientX - panStartX;
+      const dy = e.touches[0].clientY - panStartY;
+      offsetX += dx;
+      offsetY += dy;
+      panStartX = e.touches[0].clientX;
+      panStartY = e.touches[0].clientY;
+      applyZoom();
+      e.preventDefault();
+    } else if (e.touches.length === 2) {
+      const t1 = e.touches[0];
+      const t2 = e.touches[1];
+      const dist = Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY);
+      const scale = dist / pinchStartDist;
+      const newZoom = Math.min(Math.max(pinchStartZoom * scale, 0.1), 10);
+
+      offsetX -= pinchMidX * (newZoom / zoom - 1);
+      offsetY -= pinchMidY * (newZoom / zoom - 1);
+      zoom = newZoom;
+      applyZoom();
+      e.preventDefault();
+    }
+  }, { passive: false });
+
+  svgContainer.addEventListener("touchend", (e) => {
+    if (e.touches.length === 0) {
+      isPanning = false;
+    } else if (e.touches.length === 1) {
+      isPanning = true;
+      panStartX = e.touches[0].clientX;
+      panStartY = e.touches[0].clientY;
+    }
+  });
+
+  // Set initial cursor
+  svgContainer.style.cursor = "default";
+  if (svgDoc) svgDoc.documentElement.style.cursor = "default";
+}
+
+// Zoom controls
+document.getElementById("zoomIn").addEventListener("click", () => {
+  zoom = Math.min(zoom * 1.25, 10);
+  applyZoom();
+});
+
+document.getElementById("zoomOut").addEventListener("click", () => {
+  zoom = Math.max(zoom / 1.25, 0.1);
+  applyZoom();
+});
+
+document.getElementById("zoomReset").addEventListener("click", () => {
+  zoom = 1;
+  applyZoom();
+});
+
+document.getElementById("zoomCenter").addEventListener("click", () => {
+  offsetX = 0;
+  offsetY = 0;
+  applyZoom();
+});
+
+// ===== INSPECT MODE =====
+function toggleInspectMode() {
+  const wasInspectMode = inspectMode;
+  inspectMode = !inspectMode;
+  const svgPreview = document.getElementById('svgPreview');
+  
+  svgPreview.style.pointerEvents = inspectMode ? 'all' : 'none';
+  document.getElementById('interactionToggle').classList.toggle('active', inspectMode);
+  document.body.classList.toggle('inspect-mode', inspectMode);
+
+  // Clear highlights when exiting Inspect Mode
+  if (wasInspectMode && !inspectMode) {
+    clearHighlights();
+    document.querySelectorAll('.color-item label.highlight').forEach(label => {
+      label.classList.remove('highlight');
+    });
+  }
+
+  // Update cursor
+  const svgDoc = svgPreview.contentDocument;
+  if (svgDoc && svgDoc.documentElement) {
+    svgDoc.documentElement.style.cursor = inspectMode ? 'crosshair' : 'default';
+    if (inspectMode) {
+      svgDoc.querySelectorAll('*').forEach(el => {
+        if (el && el.style) el.style.cursor = 'crosshair';
+      });
+    }
+  }
+}
+
+function updateSVGCursor() {
+  const svgDoc = document.getElementById('svgPreview').contentDocument;
+  if (svgDoc && inspectMode) {
+    svgDoc.documentElement.style.cursor = 'crosshair';
+    svgDoc.querySelectorAll('*').forEach(el => {
+      el.style.cursor = 'crosshair';
+    });
+  }
+}
+
+document.getElementById('interactionToggle').addEventListener('click', toggleInspectMode);
+
+// Initialize inspect mode
+document.getElementById('svgPreview').style.pointerEvents = 'none';
+document.body.classList.remove('inspect-mode');
+
+// ===== UNDO/REDO SYSTEM =====
+function saveToHistory() {
+  if (saveTimeout) clearTimeout(saveTimeout);
+  
+  saveTimeout = setTimeout(() => {
+    const currentCSS = localStorage.getItem("themeCSS") || "";
+    
+    if (undoStack.length === 0 || undoStack[undoStack.length - 1] !== currentCSS) {
+      undoStack.push(currentCSS);
+      if (undoStack.length > CONFIG.MAX_HISTORY) undoStack.shift();
+      redoStack = [];
+      updateUndoRedoButtons();
+    }
+    
+    saveTimeout = null;
+  }, CONFIG.SAVE_DELAY);
+}
+
+function updateUndoRedoButtons() {
+  document.getElementById('undoBtn').disabled = undoStack.length <= 1;
+  document.getElementById('redoBtn').disabled = redoStack.length === 0;
+}
+
+function undo() {
+  if (saveTimeout) {
+    clearTimeout(saveTimeout);
+    saveTimeout = null;
+  }
+  
+  if (undoStack.length > 1) {
+    const currentState = undoStack.pop();
+    redoStack.push(currentState);
+    const previousState = undoStack[undoStack.length - 1];
+    localStorage.setItem("themeCSS", previousState);
+    applyCSS(previousState);
+    updateUndoRedoButtons();
+  }
+}
+
+function redo() {
+  if (saveTimeout) {
+    clearTimeout(saveTimeout);
+    saveTimeout = null;
+  }
+  
+  if (redoStack.length > 0) {
+    const nextState = redoStack.pop();
+    undoStack.push(nextState);
+    localStorage.setItem("themeCSS", nextState);
+    applyCSS(nextState);
+    updateUndoRedoButtons();
+  }
+}
+
+function setupColorInputListeners() {
+  document.querySelectorAll('input[data-coloris]').forEach(input => {
+    input.removeEventListener('input', input._colorChangeHandler);
+    input._colorChangeHandler = () => {
+      if (!isApplyingHistory) {
+        saveCSS();
+        saveToHistory();
+      }
+    };
+    input.addEventListener('input', input._colorChangeHandler);
+  });
+}
+
+document.getElementById('undoBtn').addEventListener('click', undo);
+document.getElementById('redoBtn').addEventListener('click', redo);
+
+// ===== CLIPBOARD & FILE OPERATIONS =====
+document.getElementById("copyBtn").addEventListener("click", async () => {
+  const css = localStorage.getItem("themeCSS") || "";
+  try {
+    await navigator.clipboard.writeText(css);
+    showCopyNotification('CSS copied to clipboard!');
+  } catch (error) {
+    console.error('Failed to copy:', error);
+    showCopyNotification('Failed to copy CSS', true);
+  }
+});
+
+document.getElementById("downloadBtn").addEventListener("click", () => {
+  const css = localStorage.getItem("themeCSS") || "";
+  const blob = new Blob([css], {type: "text/css"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "theme-updated.css";
+  a.click();
+  URL.revokeObjectURL(url);
+});
+
+document.getElementById("pasteBtn").addEventListener("click", () => {
+  const css = prompt('Paste your CSS here:');
+  if (css && css.includes('{')) {
+    saveToHistory();
+    localStorage.setItem("themeCSS", css);
+    applyCSS(css);
+    saveToHistory();
+    showCopyNotification('CSS pasted successfully!');
+  } else if (css) {
+    showCopyNotification('No valid CSS found', true);
+  }
+});
+
+// ===== KEYBOARD SHORTCUTS =====
+document.addEventListener('keydown', (e) => {
+  if (e.target.tagName === 'INPUT') return;
+  
+  const key = e.key.toLowerCase();
+  let shouldPreventDefault = false;
+  
+  // Ctrl/Cmd key combinations
+  if ((e.ctrlKey || e.metaKey) && !e.altKey) {
+    switch (key) {
+      case 'z':
+        if (e.shiftKey) redo();
+        else undo();
+        shouldPreventDefault = true;
+        break;
+      case 'y':
+        redo();
+        shouldPreventDefault = true;
+        break;
+      case 'c':
+        document.getElementById('copyBtn').click();
+        break;
+      case 'v':
+        document.getElementById('pasteBtn').click();
+        break;
+    }
+  }
+  // Single key shortcuts
+  else if (!e.ctrlKey && !e.metaKey && !e.altKey && !e.shiftKey) {
+    switch (key) {
+      case 'i':
+        toggleInspectMode();
+        shouldPreventDefault = true;
+        break;
+      case 'c':
+        document.getElementById('copyBtn').click();
+        shouldPreventDefault = true;
+        break;
+      case 'p':
+        document.getElementById('pasteBtn').click();
+        shouldPreventDefault = true;
+        break;
+      case '+':
+        document.getElementById('zoomIn').click();
+        shouldPreventDefault = true;
+        break;
+      case '-':
+        document.getElementById('zoomOut').click();
+        shouldPreventDefault = true;
+        break;
+      case '0':
+        document.getElementById('zoomReset').click();
+        shouldPreventDefault = true;
+        break;
+      case '.':
+        document.getElementById('zoomCenter').click();
+        shouldPreventDefault = true;
+        break;
+    }
+  }
+  
+  if (shouldPreventDefault) e.preventDefault();
+});
+
+// ===== UTILITY FUNCTIONS =====
+function showCopyNotification(message, isError = false) {
+  const existingNotification = document.querySelector('.copy-notification');
+  if (existingNotification) existingNotification.remove();
+  
+  const notification = document.createElement('div');
+  notification.className = `copy-notification ${isError ? 'error' : ''}`;
+  notification.textContent = message;
+  document.body.appendChild(notification);
+  
+  setTimeout(() => notification.classList.add('show'), 10);
+  setTimeout(() => {
+    notification.classList.remove('show');
+    setTimeout(() => notification.remove(), 300);
+  }, 2000);
+}
+
+// ===== COLORIS INITIALIZATION =====
+Coloris({
+  theme: 'polaroid',
+  themeMode: 'dark',
+  formatToggle: false,
+  focusInput: false,
+  selectInput: false,
+  alpha: true,
+  format: 'hex',
+  margin: 6,
+});
+</script>
+</body>
+</html>

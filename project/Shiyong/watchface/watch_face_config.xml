@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<providers>
+    <TemplateWatch dpi="454">
+        <Widget widget_type="IMAGE">
+            <Image x="0" label="Background" y="0" res_name="A100_116.png" type="static"/>
+        </Widget>
+        <Widget widget_type="HAND">
+            <Hand begin_arc="0" rotation_center_x="6" rotation_center_y="227" drawable_width="454" data_type="DATA_HOUR24_RATIO" drawable_x="0" drawable_y="0" label="Compass" end_arc="-360" res_name="A100_115.png" drawable_height="454" type="static"/>
+        </Widget>
+        <Widget widget_type="HAND">
+            <Hand begin_arc="0" rotation_center_x="4" rotation_center_y="227" drawable_width="454" data_type="DATA_HOUR12_RATIO" drawable_x="0" drawable_y="0" label="Hour hand" end_arc="360" res_name="A100_114.png" drawable_height="454" type="static"/>
+        </Widget>
+        <Widget widget_type="HAND">
+            <Hand begin_arc="0" rotation_center_x="72" rotation_center_y="72" drawable_width="202" data_type="DATA_SECOND_RATIO" drawable_x="198" drawable_y="230" label="Seconds" end_arc="-360" res_name="A100_113.png" drawable_height="202" type="static"/>
+        </Widget>
+        <Widget widget_type="SELECTIMAGE">
+            <SelectImage data_type="DATA_MINITE_LOW" drawable_x="411" drawable_y="205" label="Minute low" type="static"/>
+            <ImagesList res_0="A100_103.png" res_4="A100_107.png" res_5="A100_108.png" res_3="A100_106.png" res_12="" res_10="" res_7="A100_110.png" res_1="A100_104.png" res_2="A100_105.png" res_13="" res_8="A100_111.png" res_14="" res_11="" res_6="A100_109.png" res_9="A100_112.png"/>
+        </Widget>
+        <Widget widget_type="SELECTIMAGE">
+            <SelectImage data_type="DATA_MINITE_HIGH" drawable_x="382" drawable_y="205" label="Minute high" type="static"/>
+            <ImagesList res_0="A100_103.png" res_4="A100_107.png" res_5="A100_108.png" res_3="A100_106.png" res_12="" res_10="" res_7="A100_110.png" res_1="A100_104.png" res_2="A100_105.png" res_13="" res_8="A100_111.png" res_14="" res_11="" res_6="A100_109.png" res_9="A100_112.png"/>
+        </Widget>
+        <Widget widget_type="SELECTIMAGE">
+            <SelectImage data_type="DATA_HOUR_LOW" drawable_x="341" drawable_y="205" label="Hour low" type="static"/>
+            <ImagesList res_0="A100_103.png" res_4="A100_107.png" res_5="A100_108.png" res_3="A100_106.png" res_12="" res_10="" res_7="A100_110.png" res_1="A100_104.png" res_2="A100_105.png" res_13="" res_8="A100_111.png" res_14="" res_11="" res_6="A100_109.png" res_9="A100_112.png"/>
+        </Widget>
+        <Widget widget_type="SELECTIMAGE">
+            <SelectImage data_type="DATA_HOUR_HIGH" drawable_x="313" drawable_y="205" label="Hour high" type="static"/>
+            <ImagesList res_0="A100_103.png" res_4="A100_107.png" res_5="A100_108.png" res_3="A100_106.png" res_12="" res_10="" res_7="A100_110.png" res_1="A100_104.png" res_2="A100_105.png" res_13="" res_8="A100_111.png" res_14="" res_11="" res_6="A100_109.png" res_9="A100_112.png"/>
+        </Widget>
+        <Widget widget_type="SELECTIMAGE">
+            <SelectImage data_type="DATA_DATE_LOW" drawable_x="255" drawable_y="205" label="Date low" type="static"/>
+            <ImagesList res_0="A100_093.png" res_4="A100_097.png" res_5="A100_098.png" res_3="A100_096.png" res_12="" res_10="" res_7="A100_100.png" res_1="A100_094.png" res_2="A100_095.png" res_13="" res_8="A100_101.png" res_14="" res_11="" res_6="A100_099.png" res_9="A100_102.png"/>
+        </Widget>
+        <Widget widget_type="SELECTIMAGE">
+            <SelectImage data_type="DATA_DATE_HIGH" drawable_x="227" drawable_y="205" label="Date high" type="static"/>
+            <ImagesList res_0="A100_093.png" res_4="" res_5="" res_3="A100_096.png" res_12="" res_10="" res_7="" res_1="A100_094.png" res_2="A100_095.png" res_13="" res_8="" res_14="" res_11="" res_6="" res_9=""/>
+        </Widget>
+        <Widget widget_type="SELECTIMAGE">
+            <SelectImage data_type="DATA_MONTH" drawable_x="153" drawable_y="205" label="Month" type="static"/>
+            <ImagesList res_0="A100_081.png" res_4="A100_084.png" res_5="A100_085.png" res_3="A100_083.png" res_12="A100_092.png" res_10="A100_090.png" res_7="A100_087.png" res_1="A100_081.png" res_2="A100_082.png" res_13="" res_8="A100_088.png" res_14="" res_11="A100_091.png" res_6="A100_086.png" res_9="A100_089.png"/>
+        </Widget>
+        <Widget widget_type="TEXT">
+            <Text color_blue="0" color_red="255" alignment_type="LEFT" drawable_width="50" data_type="DATA_POWER" drawable_x="65" font_type="F_ROBOTOCONDENSED_REGULAR_20" drawable_y="276" line_spacing="0" color_green="102" label="Battery reading" drawable_height="20" alpha="255" type="static"/>
+        </Widget>
+        <Widget widget_type="SELECTIMAGE">
+            <SelectImage data_type="DATA_POWER_ENUM" drawable_x="27" drawable_y="282" label="Battery" type="static"/>
+            <ImagesList res_0="A100_075.png" res_4="A100_077.png" res_5="A100_078.png" res_3="A100_077.png" res_12="" res_10="A100_080.png" res_7="A100_079.png" res_1="A100_076.png" res_2="A100_076.png" res_13="" res_8="A100_079.png" res_14="" res_11="" res_6="A100_078.png" res_9="A100_080.png"/>
+        </Widget>
+        <Widget widget_type="SELECTIMAGE">
+            <SelectImage data_type="DATA_WEEK" drawable_x="115" drawable_y="282" label="Weekday" type="static"/>
+            <ImagesList res_0="A100_068.png" res_4="A100_071.png" res_5="A100_072.png" res_3="A100_070.png" res_12="" res_10="" res_7="A100_074.png" res_1="A100_068.png" res_2="A100_069.png" res_13="" res_8="" res_14="" res_11="" res_6="A100_073.png" res_9=""/>
+        </Widget>
+        <Widget widget_type="SELECTIMAGE">
+            <SelectImage data_type="DATA_STEPS_FIVE" drawable_x="176" drawable_y="415" label="Steps 10000" type="static"/>
+            <ImagesList res_0="A100_058.png" res_4="A100_062.png" res_5="A100_063.png" res_3="A100_061.png" res_12="" res_10="" res_7="A100_065.png" res_1="A100_059.png" res_2="A100_060.png" res_13="" res_8="A100_066.png" res_14="" res_11="" res_6="A100_064.png" res_9="A100_067.png"/>
+        </Widget>
+        <Widget widget_type="SELECTIMAGE">
+            <SelectImage data_type="DATA_STEPS_FOUR" drawable_x="176" drawable_y="415" label="Steps 1000" type="static"/>
+            <ImagesList res_0="A100_048.png" res_4="A100_052.png" res_5="A100_053.png" res_3="A100_051.png" res_12="" res_10="" res_7="A100_055.png" res_1="A100_049.png" res_2="A100_050.png" res_13="" res_8="A100_056.png" res_14="" res_11="" res_6="A100_054.png" res_9="A100_057.png"/>
+        </Widget>
+        <Widget widget_type="SELECTIMAGE">
+            <SelectImage data_type="DATA_STEPS_THREE" drawable_x="176" drawable_y="415" label="Steps 100" type="static"/>
+            <ImagesList res_0="A100_038.png" res_4="A100_042.png" res_5="A100_043.png" res_3="A100_041.png" res_12="" res_10="" res_7="A100_045.png" res_1="A100_039.png" res_2="A100_040.png" res_13="" res_8="A100_046.png" res_14="" res_11="" res_6="A100_044.png" res_9="A100_047.png"/>
+        </Widget>
+        <Widget widget_type="SELECTIMAGE">
+            <SelectImage data_type="DATA_STEPS_TWO" drawable_x="176" drawable_y="415" label="Steps 10" type="static"/>
+            <ImagesList res_0="A100_028.png" res_4="A100_032.png" res_5="A100_033.png" res_3="A100_031.png" res_12="" res_10="" res_7="A100_035.png" res_1="A100_029.png" res_2="A100_030.png" res_13="" res_8="A100_036.png" res_14="" res_11="" res_6="A100_034.png" res_9="A100_037.png"/>
+        </Widget>
+        <Widget widget_type="SELECTIMAGE">
+            <SelectImage data_type="DATA_STEPS_ONE" drawable_x="176" drawable_y="415" label="Steps 1" type="static"/>
+            <ImagesList res_0="A100_018.png" res_4="A100_022.png" res_5="A100_023.png" res_3="A100_021.png" res_12="" res_10="" res_7="A100_025.png" res_1="A100_019.png" res_2="A100_020.png" res_13="" res_8="A100_026.png" res_14="" res_11="" res_6="A100_024.png" res_9="A100_027.png"/>
+        </Widget>
+        <Widget widget_type="SELECTIMAGE">
+            <SelectImage data_type="DATA_UNREADMSG_STATE" drawable_x="294" drawable_y="413" label="Messages" type="static"/>
+            <ImagesList res_0="A100_016.png" res_4="" res_5="" res_3="" res_12="" res_10="" res_7="" res_1="A100_017.png" res_2="" res_13="" res_8="" res_14="" res_11="" res_6="" res_9=""/>
+        </Widget>
+        <Widget widget_type="TEXT">
+            <Text color_blue="70" color_red="52" alignment_type="LEFT" drawable_width="64" data_type="DATA_AILTITUDE" drawable_x="355" font_type="F_ROBOTOCONDENSED_REGULAR_20" drawable_y="175" line_spacing="0" color_green="78" label="Altitude reading" drawable_height="20" alpha="255" type="static"/>
+        </Widget>
+        <Widget widget_type="TEXT">
+            <Text color_blue="0" color_red="255" alignment_type="LEFT" drawable_width="50" data_type="DATA_HEARTRATE" drawable_x="232" font_type="F_ROBOTOCONDENSED_REGULAR_20" drawable_y="151" line_spacing="0" color_green="102" label="Heart rate" drawable_height="20" alpha="255" type="static"/>
+        </Widget>
+        <Widget widget_type="TEXT2">
+            <Text2 color_blue="63" color_red="127" alignment_type="LEFT" drawable_width="100" data_connector_type="CONN_STUB" data_type="DATA_HEARTRATE_MIN" drawable_x="231" font_type="F_ROBOTOCONDENSED_REGULAR_20" drawable_y="175" line_spacing="0" color_green="79" label="Heart minmax" data2_type="DATA_HEARTRATE_MAX" drawable_height="20" alpha="255" type="static"/>
+        </Widget>
+        <Widget widget_type="HAND">
+            <Hand begin_arc="-90" rotation_center_x="48" rotation_center_y="2" drawable_width="96" data_type="DATA_HEARTRATE_RATIO" drawable_x="179" drawable_y="75" label="Heart hand" end_arc="139.5" res_name="A100_015.png" drawable_height="96" type="static"/>
+        </Widget>
+        <Widget widget_type="TEXT">
+            <Text color_blue="207" color_red="0" alignment_type="CENTER" drawable_width="100" data_type="DATA_TEMPERATURE" drawable_x="306" font_type="F_ROBOTOCONDENSED_REGULAR_38" drawable_y="100" line_spacing="0" color_green="234" label="Temperature" drawable_height="37" alpha="255" type="static"/>
+        </Widget>
+        <Widget widget_type="TEXT2">
+            <Text2 color_blue="101" color_red="58" alignment_type="CENTER" drawable_width="100" data_connector_type="CONN_SLASH" data_type="DATA_TEMPERATURE_MAX" drawable_x="306" font_type="F_ROBOTOCONDENSED_REGULAR_20" drawable_y="140" line_spacing="0" color_green="117" label="Temperature minmax" data2_type="DATA_TEMPERATURE_MIN" drawable_height="20" alpha="255" type="static"/>
+        </Widget>
+        <Widget widget_type="SELECTIMAGE">
+            <SelectImage data_type="DATA_TEMPERATURE_TYPE" drawable_x="396" drawable_y="145" label="Temperature unit" type="static"/>
+            <ImagesList res_0="A100_013.png" res_4="" res_5="" res_3="" res_12="" res_10="" res_7="" res_1="A100_014.png" res_2="" res_13="" res_8="" res_14="" res_11="" res_6="" res_9=""/>
+        </Widget>
+        <Widget widget_type="SELECTIMAGE">
+            <SelectImage data_type="DATA_WEATHERTYPE" drawable_x="274" drawable_y="100" label="Weather" type="static"/>
+            <ImagesList res_0="A100_002.png" res_4="A100_006.png" res_5="A100_007.png" res_3="A100_005.png" res_12="" res_10="A100_012.png" res_7="A100_009.png" res_1="A100_003.png" res_2="A100_004.png" res_13="" res_8="A100_010.png" res_14="" res_11="" res_6="A100_008.png" res_9="A100_011.png"/>
+        </Widget>
+    </TemplateWatch>
+</providers>

@@ -1,0 +1,59 @@
+/* 
+swatches:[ 
+    '#ff6600', '#e96313', '#d46123', '#bf5e2f', '#aa5a38', '#94553d', '#7f4f3f', '#6a473d', '#553e38', '#3f322f', '#2a2423', '#151313', 
+    '#00ead1', '#11d6bd', '#20c3aa', '#2baf98', '#339c86', '#388876', '#3a7566', '#386156', '#344e46', '#2b3a35', '#202624', '#111312', 
+] 
+*/
+
+#background { fill: #000000; }
+#background { stroke: #111312; }
+.utc-offset, #sc-title { fill: #3a7566; }
+.nh { fill: #00ead1; }
+.sh { fill: #ff6600; }
+.title { fill: #3f322f; }
+#xxxx-day { fill: #00ead1; }
+#xxxx-time { fill: #ff6600; }
+.xxxx-static { fill: #2b3a35; }
+.xxxx-month { fill: #3a7566; }
+#iso8601 { fill: #2b3a35; }
+.dectree-text { fill: #386156; }
+.dectree-yes { stroke: #386156; }
+.dectree-no { stroke: #386156; }
+.ncp-label { fill: #386156; }
+.ncp-star { fill: #00ead1; }
+.ncp-asterism, .ncp-dots { stroke: #3a7566; }
+.ncp-title { fill: #3a7566; }
+#sc-dst, #sc-legend, .sc-dots { fill: #3a7566; }
+.sc-sun { fill: #3a7566; }
+#sec-bg { fill: #151313; }
+#pattern43 { fill: #6a473d; }
+.sec-text { fill: #bf5e2f; }
+.dragon { fill: #000000; }
+#sec-circle, #sec-ticks { stroke: #7f4f3f; }
+.bpm-labels { fill: #7f4f3f; }
+#bpm-icon { fill: #7f4f3f; }
+#bpm-reading, #bpm-reading tspan { fill: #ff6600; }
+#bpm-minmax, #bpm-minmax tspan { fill: #7f4f3f; }
+#bpm-dash { stroke: #2a2423; }
+.bpm-segment { stroke: #7f4f3f; }
+.bpm-hand { stroke: #ff6600; }
+.bpm-hand-bg { stroke: #2a2423; }
+#weather-icon { fill: #00ead1; }
+#weather-temperature { fill: #00ead1; }
+#weather-minmax { fill: #3a7566; }
+.weather-unit { fill: #344e46; }
+#altitude-icon { fill: #344e46; }
+#altitude-reading { fill: #344e46; }
+#altitude-unit { fill: #2b3a35; }
+#battery-icon { fill: #7f4f3f; }
+.battery-label { fill: #ff6600; }
+.battery-off { fill: #3f322f; }
+.battery-on { fill: #ff6600; }
+.steps-icon { fill: #386156; }
+.steps-important { fill: #00ead1; }
+.steps-unimportant { fill: #344e46; }
+.weekday-on, .weekday-off { stroke: #00ead1; }
+.weekday-on { fill: #00ead1; }
+.weekday-off { fill: #386156; }
+#messages { fill: #00ead1; }
+

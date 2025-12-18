@@ -26,7 +26,7 @@ swatches:[
 #sc-dst, #sc-legend, .sc-dots { fill: #3a7566; }
 .sc-sun { fill: #3a7566; }
 #sec-bg { fill: #151313; }
-#pattern43 { fill: #6a473d; }
+#pattern43 { fill: #553e38; }
 .sec-text { fill: #bf5e2f; }
 .dragon { fill: #000000; }
 #sec-circle, #sec-ticks { stroke: #7f4f3f; }
@@ -35,7 +35,7 @@ swatches:[
 #bpm-reading, #bpm-reading tspan { fill: #ff6600; }
 #bpm-minmax, #bpm-minmax tspan { fill: #7f4f3f; }
 #bpm-dash { stroke: #2a2423; }
-.bpm-segment { stroke: #7f4f3f; }
+.bpm-segment { stroke: #3f322f; }
 .bpm-hand { stroke: #ff6600; }
 .bpm-hand-bg { stroke: #2a2423; }
 #weather-icon { fill: #00ead1; }

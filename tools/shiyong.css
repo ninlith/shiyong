@@ -36,8 +36,7 @@ swatches:[
 #bpm-minmax, #bpm-minmax tspan { fill: #7f4f3f; }
 #bpm-dash { stroke: #2a2423; }
 .bpm-segment { stroke: #3f322f; }
-.bpm-hand { stroke: #ff6600; }
-.bpm-hand-bg { stroke: #2a2423; }
+.bpm-pointer { stroke: #ff6600; }
 #weather-icon { fill: #00ead1; }
 #weather-temperature { fill: #00ead1; }
 #weather-minmax { fill: #3a7566; }
